@@ -37,7 +37,7 @@ network.add(layers.Dense(10, activation='softmax'))
 
 network.summary()
 
-network.compile(optimizer='adam',loss='categorical_crossentropy', metrics=['accuracy'])
+network.compile(optimizer='RMSprop',loss='categorical_crossentropy', metrics=['accuracy'])
 
 history = network.fit(train_images, 
                       train_labels, 
