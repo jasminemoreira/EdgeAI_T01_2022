@@ -32,16 +32,16 @@ test_labels = to_categorical(test_labels)
 
 
 network = models.Sequential()
-network.add(layers.Dense(200,activation='relu', input_shape=(28 * 28,)))
+network.add(layers.Dense(50,activation='relu', input_shape=(28 * 28,)))
 network.add(layers.Dense(10, activation='softmax'))
 
 network.summary()
 
-network.compile(optimizer='RMSprop',loss='categorical_crossentropy', metrics=['accuracy'])
+network.compile(optimizer='adam',loss='categorical_crossentropy', metrics=['accuracy'])
 
 history = network.fit(train_images, 
                       train_labels, 
-                      epochs=20, 
+                      epochs=10, 
                       batch_size=128, 
                       validation_data=(test_images,test_labels))
 
