@@ -20,13 +20,10 @@ circle_r = 1
 # center of the circle (x, y)
 circle_x = 5
 circle_y = 7
-nsamples = 2000
-train_percentage = 0.5
-val_percentage = 0.25    # 20% from training
-test_percentage = 0.25   # 50% for test
-
-tflite_model_name = 'circ_model'  # Will be given .tflite suffix
-c_model_name = 'circ_model'       # Will be given .h suffix
+nsamples = 300
+train_percentage = 0.6
+val_percentage = 0.2    # 20% from training
+test_percentage = 0.2   # 20% for test
 
 square_s = 3 * circle_r 
 
@@ -78,15 +75,15 @@ plt.show()
 x_mean = np.mean(X)
 y_mean = np.mean(Y)
 
-x_stdd = np.std(X)
-y_stdd = np.std(Y)
-X = (X-x_mean)/x_stdd
-Y = (Y-y_mean)/y_stdd
+#x_stdd = np.std(X)
+#y_stdd = np.std(Y)
+#X = (X-x_mean)/x_stdd
+#Y = (Y-y_mean)/y_stdd
 
-#x_max = np.max(X)
-#y_max = np.max(Y)
-#X = (X-x_mean)/x_max
-#Y = (Y-y_mean)/y_max
+X = (X-x_mean)
+Y = (Y-y_mean)
+X = X/np.max([-1*np.min(X),np.max(X)])
+Y = Y/np.max([-1*np.min(Y),np.max(Y)])
 
 
 data = []
@@ -149,17 +146,19 @@ plt.show()
 
 # Create a model
 model = tf.keras.Sequential()
-model.add(layers.Dense(100,activation='relu', input_shape=(2,)))
+model.add(layers.Dense(50,activation='relu', input_shape=(2,)))
+#model.add(layers.Dense(10,activation='relu'))
 model.add(layers.Dense(2, activation='softmax'))
 # View model
 model.summary()
+
 # Add optimizer, loss function, and metrics to model and compile it
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
 # Train model
 history = model.fit(train_values,
                     train_labels,
-                    epochs=800,
+                    epochs=400,
                     batch_size=50,
                     validation_data=(val_values, val_labels))
 
