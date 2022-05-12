@@ -15,8 +15,8 @@ int led = -1;
 bool initialized = false;
 
 // Animates a dot across the screen to represent the current x and y values
-void HandleOutput(tflite::ErrorReporter* error_reporter, float x_value,
-                  float y_value) {
+void HandleOutput(tflite::ErrorReporter* error_reporter, float x_val,
+                  float y_val) {
   // Do this only once
   if (!initialized) {
     // Set the LED pin to output
@@ -30,7 +30,9 @@ void HandleOutput(tflite::ErrorReporter* error_reporter, float x_value,
 
   // Calculate the brightness of the LED such that y=-1 is fully off
   // and y=1 is fully on. The LED's brightness can range from 0-255.
-  int brightness = (int)(127.5 * (y_value+1));
+  y_val = y_val < -1.f? -1.f : y_val;
+  y_val = y_val > 1.f? 1.f : y_val;
+  int brightness = (int)(127.5 * (y_val+1));
 
   // Set the brightness of the LED. If the specified pin does not support PWM,
   // this will result in the LED being on when y > 127, off otherwise.

@@ -1,12 +1,9 @@
 #include <TensorFlowLite_ESP32.h>
-
-#include "output_handler.h"
-#include "sine_model.h"
 #include "tensorflow/lite/experimental/micro/kernels/all_ops_resolver.h"
 #include "tensorflow/lite/experimental/micro/micro_interpreter.h"
-//#include "tensorflow/lite/experimental/micro/micro_error_reporter.h"
-//#include "tensorflow/lite/schema/schema_generated.h"
-//#include "tensorflow/lite/version.h"
+
+#include "sine_model.h"
+#include "output_handler.h"
 
 // Globals, used for compatibility with Arduino-style sketches.
 tflite::ErrorReporter* error_reporter = nullptr;
@@ -21,7 +18,7 @@ constexpr int kTensorArenaSize = 2 * 1024;
 uint8_t tensor_arena[kTensorArenaSize];
 
 
-const float kXrange = 2.f * 3.14159265359f;
+const float kXrange = 2.f * 3.14159265359f / x_factor; // All inputs must be normalized
 
 const int kInferencesPerCycle = 1000;
 
@@ -67,7 +64,7 @@ void loop() {
   // our position within the range of possible x values the model was
   // trained on, and use this to calculate a value.
   float position = static_cast<float>(inference_count) / static_cast<float>(kInferencesPerCycle);
-  float x_val = position * kXrange / x_factor;
+  float x_val = (position * kXrange - 1 );
 
   // Place our calculated x value in the model's input tensor
   input->data.f[0] = x_val;
@@ -81,13 +78,11 @@ void loop() {
 
   // Read the predicted y value from the model's output tensor
   // Denormalize output using y_factor if necessary
-  float y_val = output->data.f[0] * y_factor;
-  y_val = y_val < -1.f? -1.f : y_val;
-  y_val = y_val > 1.f? 1.f : y_val;
+  float y_val = output->data.f[0];
 
-  // Output the results. A custom HandleOutput function can be implemented
+  // Denormalise output results. A custom HandleOutput function can be implemented
   // for each supported hardware target.
-  HandleOutput(error_reporter, x_val * x_factor, y_val);
+  HandleOutput(error_reporter, x_val * x_factor, y_val  * y_factor);
 
   // Increment the inference_counter, and reset it if we have reached
   // the total number per cycle

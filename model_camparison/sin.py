@@ -10,15 +10,17 @@ import matplotlib.pyplot as plt
 import math
 import tensorflow as tf
 from tensorflow.keras import layers
+#Add Path to Spyder ---> Tools->PYTHONPATH manager
+from hex_to_c_array import hex_to_c_array
 
 
 # Settings
-nsamples = 1000     # Number of samples to use as a dataset
+nsamples = 2000     # Number of samples to use as a dataset
 val_ratio = 0.2     # Percentage of samples that should be held for validation set
 test_ratio = 0.2    # Percentage of samples that should be held for test set
 
-base_name = r"C:\Users\jasmi\INDT\Cursos\EdgeAI_T01_2022\model_camparison\sine_model"
-
+tflite_name = r"C:\Users\jasmi\INDT\Cursos\EdgeAI_T01_2022\model_camparison\sine_model.tflite"
+model_h_name = r"C:\Users\jasmi\INDT\Cursos\EdgeAI_T01_2022\ESP-32\my_first_tinyml\sine_model.h"
 
 # Generate some random samples
 np.random.seed(1234)
@@ -36,10 +38,9 @@ plt.title("Before normalization Set")
 plt.plot(x_values, y_values, '.')
 plt.show()
 
-#x_factor = 1
-#y_factor = 1
 
 # normalize
+x_values = x_values - np.mean(x_values)
 x_factor = np.max([-1*np.min(x_values),np.max(x_values)])
 y_factor = np.max([-1*np.min(y_values),np.max(y_values)])
 x_values = (x_values)/x_factor
@@ -75,8 +76,8 @@ plt.show()
 
 # Create a model
 model = tf.keras.Sequential()
-model.add(layers.Dense(16, activation='relu', input_shape=(1,)))
-model.add(layers.Dense(16, activation='relu'))
+model.add(layers.Dense(6, activation='relu', input_shape=(1,)))
+model.add(layers.Dense(4, activation='relu'))
 model.add(layers.Dense(1))
 
 # View model
@@ -89,7 +90,7 @@ model.compile(optimizer='adam', loss='mae', metrics=['mae'])
 # Train model
 history = model.fit(x_train,
                     y_train,
-                    epochs=200,
+                    epochs=300,
                     batch_size=20,
                     validation_data=(x_val, y_val))
 
@@ -97,8 +98,8 @@ history = model.fit(x_train,
 loss = history.history['loss']
 val_loss = history.history['val_loss']
 
-#loss = loss[100:]
-#val_loss = val_loss[100:]
+#loss = loss[180:]
+#val_loss = val_loss[180:]
 
 epochs = range(1, len(loss) + 1)
 plt.figure(figsize=(8,8))
@@ -121,55 +122,24 @@ plt.legend()
 plt.show()
 
 
+def representative_dataset_generator():
+    global x_test
+    for value in x_test: # Each scalar value must be inside of a 2D array that
+        yield [np.array( value, dtype = np.float32, ndmin = 2)]
+        
 # Convert Keras model to a tflite model
 converter = tf.lite.TFLiteConverter.from_keras_model(model)
-#converter.optimizations = [tf.lite.Optimize.OPTIMIZE_FOR_SIZE]
-#converter.optimizations = [tf.lite.Optimize.DEFAULT]
+       
+#Quantization - Must check if it is worth!
+converter.representative_dataset = representative_dataset_generator
+converter.optimizations = [tf.lite.Optimize.DEFAULT]
+converter.optimizations = [tf.lite.Optimize.EXPERIMENTAL_SPARSITY]
+
 tflite_model = converter.convert()
 
-open(base_name + '.tflite', 'wb').write(tflite_model)
-
-
-# Function: Convert some hex value into an array for C programming
-def hex_to_c_array(hex_data, var_name):
-
-  c_str = ''
-
-  # Create header guard
-  #c_str += '#ifndef ' + var_name.upper() + '_H\n'
-  #c_str += '#define ' + var_name.upper() + '_H\n\n'
-
-  # Add denormalization factors
-  c_str += 'float x_factor = ' + str(x_factor) + ';\n'
-  c_str += 'float y_factor = ' + str(y_factor) + ';\n'
-
-  # Add array length at top of file
-  #c_str += '\nunsigned int ' + var_name + '_len = ' + str(len(hex_data)) + ';\n'
-
-  # Declare C variable
-  c_str += 'unsigned char ' + var_name + '[] = {'
-  hex_array = []
-  for i, val in enumerate(hex_data) :
-
-    # Construct string from hex
-    hex_str = format(val, '#04x')
-
-    # Add formatting so each line stays within 80 characters
-    if (i + 1) < len(hex_data):
-      hex_str += ','
-    if (i + 1) % 12 == 0:
-      hex_str += '\n '
-    hex_array.append(hex_str)
-
-  # Add closing brace
-  c_str += '\n ' + format(' '.join(hex_array)) + '\n};\n\n'
-
-  # Close out header guard
-  #c_str += '#endif //' + var_name.upper() + '_H'
-
-  return c_str
+open(tflite_name, 'wb').write(tflite_model)
 
 # Write TFLite model to a C source (or header) file
-with open(base_name + '.h', 'w') as file:
-  file.write(hex_to_c_array(tflite_model, "sine_model"))
+with open(model_h_name, 'w') as file:
+  file.write(hex_to_c_array(tflite_model, "sine_model", x_factor, y_factor))
 
