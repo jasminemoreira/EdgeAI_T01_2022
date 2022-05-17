@@ -1,12 +1,10 @@
+//#include <LowPower.h>
 #include <Wire.h>
 #include <Math.h>
 #include <CircularBuffer.h>
 
 #define MOVING_AVERAGE_WINDOW 10 
-#define MPU_READ_PERIOD 20 
-//#define X_OFFSET 8.2
-//#define Y_OFFSET 0.3
-//#define Z_OFFSET 0.8
+#define MPU_READ_PERIOD 20  
 
 const int MPU_addr=0x68; // I2C address of the MPU-6050
 
@@ -20,7 +18,7 @@ CircularBuffer<float, MOVING_AVERAGE_WINDOW> y_buffer;
 CircularBuffer<float, MOVING_AVERAGE_WINDOW> z_buffer;
 
 void initMPU(){
-  Wire.begin(22,23);
+  Wire.begin();
   Wire.beginTransmission(MPU_addr);
   Wire.write(0x6B); // PWR_MGMT_1 register
   Wire.write(0x00); // set to zero (wakes up the MPU-6050)
@@ -56,9 +54,9 @@ void readMPU(){
   Wire.write(0x43); // Gyro data first register address 0x43
   Wire.endTransmission(false);
   Wire.requestFrom(MPU_addr, 6, true); // Read 4 registers total, each axis value is stored in 2 registers
-  GyroX = int16_t(Wire.read() << 8 | Wire.read()) / 20.0; // For a 250deg/s range we have to divide first the raw value by 131.0, according to the datasheet
-  GyroY = int16_t(Wire.read() << 8 | Wire.read()) / 20.0;
-  GyroZ = int16_t(Wire.read() << 8 | Wire.read()) / 20.0;
+  GyroX = int16_t(Wire.read() << 8 | Wire.read()) / 131.0; // For a 250deg/s range we have to divide first the raw value by 131.0, according to the datasheet
+  GyroY = int16_t(Wire.read() << 8 | Wire.read()) / 131.0;
+  GyroZ = int16_t(Wire.read() << 8 | Wire.read()) / 131.0;
 }
 
 void prepareMAQueue(){
@@ -99,8 +97,7 @@ void updateMAValues(){
       AADZ += abs(dz);
   }
 
-  AADM = sqrt(sq(AADX)+sq(AADY)+sq(AADZ));
-  
+   AADM = sqrt(sq(AADX)+sq(AADY)+sq(AADZ));
   //AADX = log(AADX+1);
   //AADY = log(AADY+1);
   //AADZ = log(AADZ+1);
@@ -117,76 +114,80 @@ void loop(){
    
   updateMAValues();
 
-  // Raw Gyroscope
-  /*
-  Serial.print(GyroX);
-  Serial.print(";");
-  Serial.print(GyroY);
-  Serial.print(";");
-  Serial.print(GyroZ);
-  Serial.println();
-  */
-
-  /*
-  Serial.print(GyroX + X_OFFSET);
-  Serial.print(";");
-  Serial.print(GyroY + Y_OFFSET);
-  Serial.print(";");
-  Serial.print(GyroZ + Z_OFFSET);
-  Serial.println();
-  */
-
-  // === Sensor reading minus the Moving Average ===
-  /*
-  Serial.print(MAGyroX);
-  Serial.print(";");
-  Serial.print(MAGyroY);
-  Serial.print(";");
-  Serial.print(MAGyroZ);
-  Serial.println();
-  */
-  
-  // === Sensor reading minus the Moving Average ===
-  // === or Moving Average minus offset
-
-  /*
-  Serial.print(GyroX - MAGyroX);
-  Serial.print(";");
-  Serial.print(GyroY - MAGyroY);
-  Serial.print(";");
-  Serial.print(GyroZ - MAGyroZ);
-  Serial.println();
-  */
-
-  
-  // Absolute Angular Drift
-  Serial.print(AADX);
-  Serial.print(";");
-  Serial.print(AADY);
-  Serial.print(";");
-  Serial.print(AADZ);
-  Serial.println();
-  
-  if(AADM > 15){
-    digitalWrite(LED_BUILTIN,HIGH);
-    ledTime = 1000;
-  }
-  ledTime -= elapsedTime;
-  if(ledTime <= 0){
-    digitalWrite(LED_BUILTIN,LOW);
-    ledTime = 0;
-  }
-  
- 
-  
   // === Send data (Serial) === //
-  /*
+  
   Serial.print(AccX);
   Serial.print(";");
   Serial.print(AccY);
   Serial.print(";");
   Serial.print(AccZ);
   Serial.print(";");
+  //Serial.println();
+  
+  // Raw Gyroscope
+  
+  Serial.print(GyroX);
+  Serial.print(";");
+  Serial.print(GyroY);
+  Serial.print(";");
+  Serial.print(GyroZ);
+  Serial.print(";");
+  //Serial.println();
+  
+
+  // === Sensor reading minus the Moving Average ===
+  
+  Serial.print(MAGyroX);
+  Serial.print(";");
+  Serial.print(MAGyroY);
+  Serial.print(";");
+  Serial.print(MAGyroZ);
+  Serial.print(";");
+  //Serial.println();
+  
+  
+  // === Sensor reading minus the Moving Average ===
+  // === or Moving Average minus offset
+
+  
+  Serial.print(GyroX - MAGyroX);
+  Serial.print(";");
+  Serial.print(GyroY - MAGyroY);
+  Serial.print(";");
+  Serial.print(GyroZ - MAGyroZ);
+  Serial.print(";");
+  //Serial.println();
+  
+
+  
+  // Absolute Angular Drift
+  
+  Serial.print(AADX);
+  Serial.print(";");
+  Serial.print(AADY);
+  Serial.print(";");
+  Serial.print(AADZ); 
+  Serial.print(";");
+  //Serial.println();
+  Serial.print(AADM);
+  Serial.println();
+  
+
+  /*
+  if(AADM > 1){
+    digitalWrite(LED_BUILTIN,HIGH);
+    ledTime = 100;
+  }
+  ledTime -= elapsedTime;
+  if(ledTime <= 0){
+    digitalWrite(LED_BUILTIN,LOW);
+    ledTime = 0;
+  }
   */
 
+  
+
+  
+
+  //LowPower.powerDown(5, ADC_OFF, BOD_OFF);
 }
