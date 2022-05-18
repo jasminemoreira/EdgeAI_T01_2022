@@ -79,9 +79,9 @@ void readMPU(){
   // Read 4 registers total, each axis value is stored in 2 registers
   Wire.requestFrom(MPU_addr, 6, true);
   //for a 250deg/s range we have to divide first the raw value by 131.0, according to the datasheet
-  GyroX = int16_t(Wire.read() << 8 | Wire.read()) / 20.0;
-  GyroY = int16_t(Wire.read() << 8 | Wire.read()) / 20.0;
-  GyroZ = int16_t(Wire.read() << 8 | Wire.read()) / 20.0;
+  GyroX = int16_t(Wire.read() << 8 | Wire.read()) / 10.0;
+  GyroY = int16_t(Wire.read() << 8 | Wire.read()) / 10.0;
+  GyroZ = int16_t(Wire.read() << 8 | Wire.read()) / 10.0;
 }
 
 

@@ -1,6 +1,5 @@
 #ifndef NB_H_INCLUDED
 #define NB_H_INCLUDED
-
 namespace Eloquent {
   namespace ML {
     namespace Port {
@@ -13,11 +12,11 @@ namespace Eloquent {
             float votes[2] = { 0.0f };
             float theta[1] = { 0 };
             float sigma[1] = { 0 };
-            theta[0] = 3.317922;
-            sigma[0] = 7.62077003527;
+            theta[0] = 7.43541;
+            sigma[0] = 4.215593433987;
             votes[0] = 0.5 - gauss(x, theta, sigma);
-            theta[0] = 221.923102;
-            sigma[0] = 121404.97503493095;
+            theta[0] = 303.243472;
+            sigma[0] = 114968.75330482732;
             votes[1] = 0.5 - gauss(x, theta, sigma);
             // return argmax of votes
             uint8_t classIdx = 0;
