@@ -25,6 +25,8 @@ namespace JazzTinyML{
     CircularBuffer<float, MOVING_AVERAGE_WINDOW> x_buffer;
     CircularBuffer<float, MOVING_AVERAGE_WINDOW> y_buffer;
     CircularBuffer<float, MOVING_AVERAGE_WINDOW> z_buffer;
+    // the following ensures using the right type for the index variable when iterating buffers
+    using index_t = decltype(x_buffer)::index_t;
 
     // public methods
     public:
@@ -40,19 +42,8 @@ namespace JazzTinyML{
       
       void updateAAD(){
         pushToQueue();
-        // the following ensures using the right type for the index variable
-        using index_t = decltype(x_buffer)::index_t;
-        MAGyroX = MAGyroY = MAGyroZ = 0.0;
-        for (index_t i = 0; i < MOVING_AVERAGE_WINDOW; i++) {
-            MAGyroX += x_buffer[i];
-            MAGyroY += y_buffer[i];
-            MAGyroZ += z_buffer[i];
-        }
-        // performance
-        MAGyroX = MAGyroX/(float)MOVING_AVERAGE_WINDOW;
-        MAGyroY = MAGyroY/(float)MOVING_AVERAGE_WINDOW;
-        MAGyroZ = MAGyroZ/(float)MOVING_AVERAGE_WINDOW; 
-        
+        updateMovingAverage();
+              
         AADX = AADY = AADZ = AADM = 0.0; 
         int dx, dy, dz;
         for (index_t i = 0; i < MOVING_AVERAGE_WINDOW; i++) {
@@ -124,7 +115,20 @@ namespace JazzTinyML{
         x_buffer.push(GyroX);
         y_buffer.push(GyroY);
         z_buffer.push(GyroZ);
-      }    
+      }  
+
+      void updateMovingAverage(){
+        MAGyroX = MAGyroY = MAGyroZ = 0.0;
+        for (index_t i = 0; i < MOVING_AVERAGE_WINDOW; i++) {
+            MAGyroX += x_buffer[i];
+            MAGyroY += y_buffer[i];
+            MAGyroZ += z_buffer[i];
+        }
+        // performance
+        MAGyroX = MAGyroX/(float)MOVING_AVERAGE_WINDOW;
+        MAGyroY = MAGyroY/(float)MOVING_AVERAGE_WINDOW;
+        MAGyroZ = MAGyroZ/(float)MOVING_AVERAGE_WINDOW; 
+      }
   };
 }
 
