@@ -1,19 +1,21 @@
 #include "nb.h"
-#include "gyro.h"
+#include "jgyro.h"
+
+Eloquent::ML::Port::GaussianNB gnb;
+JazzTinyML::JGyro gyro;
 
 void setup(){
-  startGyro();
   pinMode(LED_BUILTIN, OUTPUT);
   Serial.begin(115200);
 }
  
 void loop(){
-  updateGyro();
+  gyro.updateAAD();
   
-  if(predict(&AADM) == 1){
+  if(gnb.predict(&gyro.AADM) == 1){
     digitalWrite(LED_BUILTIN,HIGH);
     delay(100);
   }else{
     digitalWrite(LED_BUILTIN,LOW);
-  } 
+  }
 }
