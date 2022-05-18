@@ -3,7 +3,7 @@
 """
 Created on Tue Jun 26 09:00:18 2018
 
-@author: jasmine
+@author: Jasmine Moreira
 
 1) Preparar dados
 2) Criar o modelo (input, output size, forward pass)

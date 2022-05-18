@@ -2,7 +2,7 @@
 """
 Created on Mon May  2 09:52:52 2022
 
-@author: jasmi
+@author: Jasmine Moreira
 """
 
 import random
