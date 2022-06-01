@@ -36,6 +36,8 @@ with open(r'C:\Users\jasmi\INDT\Cursos\EdgeAI_T01_2022\sensor_data\raw_all.csv',
 
 from micromlgen import port
 from sklearn.naive_bayes import GaussianNB
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
 
 feat = []
 target = []
@@ -43,19 +45,20 @@ for row in data:
     feat.append([float(row[15])])
     target.append(int(row[16]))
 
+#classifier
+nb_clf = GaussianNB().fit(feat, target)
+dt_clf = DecisionTreeClassifier(max_depth=100, min_samples_leaf=2).fit(feat, target)
+rf_clf = RandomForestClassifier(n_estimators=2, max_depth=100, min_samples_leaf=5).fit(feat, target)
 
-clf = GaussianNB()
-clf.fit(feat, target)
-
-
+#check if it's compatible to Orange analysis
 acc = 0
 for f,t in zip(feat,target):
-    if clf.predict([f]) == t:
+    if rf_clf.predict([f]) == t:
         acc = acc+1
 acc = acc/len(feat)
 print("accuracy: "+str(acc))
 
-print(port(clf))
+print(port(rf_clf))
 
 
 

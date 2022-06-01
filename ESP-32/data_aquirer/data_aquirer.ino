@@ -1,5 +1,5 @@
 #include <Wire.h>
-#include <Math.h>
+#include <math.h>
 #include <CircularBuffer.h>
 
 //Number of samples for gyroscope moving average
@@ -79,9 +79,9 @@ void readMPU(){
   // Read 4 registers total, each axis value is stored in 2 registers
   Wire.requestFrom(MPU_addr, 6, true);
   //for a 250deg/s range we have to divide first the raw value by 131.0, according to the datasheet
-  GyroX = int16_t(Wire.read() << 8 | Wire.read()) / 10.0;
-  GyroY = int16_t(Wire.read() << 8 | Wire.read()) / 10.0;
-  GyroZ = int16_t(Wire.read() << 8 | Wire.read()) / 10.0;
+  GyroX = int16_t(Wire.read() << 8 | Wire.read()) / 131.0;
+  GyroY = int16_t(Wire.read() << 8 | Wire.read()) / 131.0;
+  GyroZ = int16_t(Wire.read() << 8 | Wire.read()) / 131.0;
 }
 
 
@@ -128,7 +128,6 @@ void updateMAValues(){
 void setup(){
   initMPU();
   prepareMAQueue();
-  pinMode(LED_BUILTIN, OUTPUT);
   Serial.begin(115200);
 }
  
@@ -137,7 +136,7 @@ void loop(){
   updateMAValues();
 
   //=== Send data (Serial) === //
-
+  
   // raw accelerometer
   Serial.print(AccX);
   Serial.print(";");
@@ -145,7 +144,8 @@ void loop(){
   Serial.print(";");
   Serial.print(AccZ);
   Serial.print(";");
-  
+  Serial.println(); 
+
   // raw gyroscope 
   Serial.print(GyroX);
   Serial.print(";");
@@ -170,8 +170,8 @@ void loop(){
   Serial.print(";");
   Serial.print(GyroZ - MAGyroZ);
   Serial.print(";");
-
-  //absolute angular drift 
+  
+  //absolute angular drift
   Serial.print(AADX);
   Serial.print(";");
   Serial.print(AADY);
@@ -180,4 +180,5 @@ void loop(){
   Serial.print(";");
   Serial.print(AADM);
   Serial.println(); 
+ 
 }
