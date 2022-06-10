@@ -44,9 +44,7 @@ void initMPU(){
 void readMPU(){
   //current time actual time read
   currentTime = millis();
-  elapsedTime = (currentTime - previousTime);
-  //previous time is stored before the actual time read
-  previousTime = currentTime;        
+  elapsedTime = (currentTime - previousTime);     
   int t = (MPU_READ_PERIOD - elapsedTime) > 0 ? int(MPU_READ_PERIOD - elapsedTime) : 0;
   delay(t);
   
@@ -61,6 +59,9 @@ void readMPU(){
   AccX = int16_t(Wire.read() << 8 | Wire.read()) / 16384.0; // X-axis value
   AccY = int16_t(Wire.read() << 8 | Wire.read()) / 16384.0; // Y-axis value
   AccZ = int16_t(Wire.read() << 8 | Wire.read()) / 16384.0; // Z-axis value
+
+  //previous time is stored before the actual time read
+  previousTime = currentTime;   
 }
 
 

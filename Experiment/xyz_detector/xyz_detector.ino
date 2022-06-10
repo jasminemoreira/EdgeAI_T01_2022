@@ -26,10 +26,6 @@ uint8_t tensor_arena[kTensorArenaSize];
 CircularBuffer<float, MOVING_WINDOW_SIZE> x_buffer;
 CircularBuffer<float, MOVING_WINDOW_SIZE> y_buffer;
 CircularBuffer<float, MOVING_WINDOW_SIZE> z_buffer;
-// Image Tensor
-float img[3*MOVING_WINDOW_SIZE];
-// Output probabilities
-float px,py,pz,pn;
 
 void pushToBuffer(){
   acc.updateDAccValues();
@@ -81,12 +77,10 @@ void loop() {
   pushToBuffer();
   //montar tensor para inferência
   for(int i=0; i< MOVING_WINDOW_SIZE; i++){
-    img[3*i] = x_buffer[i];
-    img[3*i+1] = y_buffer[i];
-    img[3*i+2] = z_buffer[i];
+    input->data.f[3*i] = x_buffer[i];
+    input->data.f[3*i+1] = y_buffer[i];
+    input->data.f[3*i+2] = z_buffer[i];
   } 
-  // Place our calculated x value in the model's input tensor
-  input->data.f = img;
 
   // Run inference, and report any error
   TfLiteStatus invoke_status = interpreter->Invoke();
