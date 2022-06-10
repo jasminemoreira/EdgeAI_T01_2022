@@ -3,7 +3,7 @@
 # project subdirectory.
 #
 
-PROJECT_NAME := words
+PROJECT_NAME := xyz_detector
 
 EXTRA_COMPONENT_DIRS = $(IDF_PATH)/examples/common_components/led_strip
 

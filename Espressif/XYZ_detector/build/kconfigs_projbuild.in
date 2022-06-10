@@ -3,5 +3,4 @@ source "C:/Users/jasmi/INDT/Cursos/esp-idf/components/bootloader/Kconfig.projbui
 source "C:/Users/jasmi/INDT/Cursos/esp-idf/components/esp_rom/Kconfig.projbuild"
 source "C:/Users/jasmi/INDT/Cursos/esp-idf/components/esptool_py/Kconfig.projbuild"
 source "C:/Users/jasmi/INDT/Cursos/esp-idf/components/partition_table/Kconfig.projbuild"
-source "C:/Users/jasmi/INDT/Cursos/EdgeAI_T01_2022/Espressif/XYZ_detector/main/Kconfig.projbuild"
 source "C:/Users/jasmi/INDT/Cursos/EdgeAI_T01_2022/Espressif/XYZ_detector/components/esp-nn/Kconfig.projbuild"

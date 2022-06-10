@@ -129,15 +129,6 @@ CONFIG_PARTITION_TABLE_MD5=y
 # end of Partition Table
 
 #
-# Example Configuration
-#
-CONFIG_BLINK_LED_GPIO=y
-# CONFIG_BLINK_LED_RMT is not set
-CONFIG_BLINK_GPIO=5
-CONFIG_BLINK_PERIOD=1000
-# end of Example Configuration
-
-#
 # ESP-NN
 #
 # CONFIG_NN_ANSI_C is not set
