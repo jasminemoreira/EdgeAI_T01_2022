@@ -27,6 +27,7 @@ train_images = []
 train_labels = []  
 test_images = []
 test_labels = []
+
 for x in range(0,len(data)-window_size):
     img = []
     label = ''
@@ -37,9 +38,9 @@ for x in range(0,len(data)-window_size):
     deltay = max(list(zip(*img))[1]) - min(list(zip(*img))[1])
     deltaz = max(list(zip(*img))[2]) - min(list(zip(*img))[2])
     
-    label = 0 if (deltax > deltay and deltax > deltaz and deltax > 2) else \
-            1 if (deltay > deltaz and deltay > deltax and deltay > 2) else \
-            2 if (deltaz > deltay and deltaz > deltax and deltaz > 2) else 3
+    label = 0 if (deltax > deltay and deltax > deltaz and deltax > 1) else \
+            1 if (deltay > deltaz and deltay > deltax and deltay > 1) else \
+            2 if (deltaz > deltay and deltaz > deltax and deltaz > 1) else 3
             
     if(np.random.random()<0.8):
         train_images.append(img)
@@ -59,7 +60,7 @@ test_images = np.array(test_images).astype('float32').reshape((len(test_images),
 
 # criar modelo
 model = models.Sequential()
-model.add(layers.Conv2D(4, (3,1),activation='relu', input_shape=(window_size,3,1)))
+model.add(layers.Conv2D(4, (2,2),activation='relu', input_shape=(window_size,3,1)))
 model.add(layers.MaxPooling2D((2,2)))
 model.add(layers.Flatten())
 model.add(layers.Dense(4, activation = 'softmax'))
@@ -101,9 +102,8 @@ plt.legend()
 plt.show()
 
 plt.figure(figsize=(8,8))
-plt.imshow(train_images[101],cmap='binary')
+plt.imshow(train_images[2001],cmap='binary')
 plt.show()
-
 
 
 
@@ -111,10 +111,10 @@ def representative_dataset_generator():
     global x_test
     for value in x_test: # Each scalar value must be inside of a 2D array that
         yield [np.array( value, dtype = np.float32, ndmin = 2)]
-        
+      
 # Convert Keras model to a tflite model
 converter = tf.lite.TFLiteConverter.from_keras_model(model)
-       
+  
 #Quantization - Must check if it is worth!
 converter.representative_dataset = representative_dataset_generator
 converter.optimizations = [tf.lite.Optimize.DEFAULT]
@@ -123,7 +123,7 @@ converter.optimizations = [tf.lite.Optimize.EXPERIMENTAL_SPARSITY]
 tflite_model = converter.convert()
 
 tflite_name = r"C:\Users\jasmi\INDT\Cursos\EdgeAI_T01_2022\Experiment\model_generator\xyz_model.tflite"
-model_h_name = r"C:\Users\jasmi\INDT\Cursos\EdgeAI_T01_2022\Experiment\xyz_detector\xyz_model.h"
+model_h_name = r"C:\Users\jasmi\INDT\Cursos\EdgeAI_T01_2022\Espressif\XYZ_detector\main\xyz_model.h"
 
 open(tflite_name, 'wb').write(tflite_model)
 

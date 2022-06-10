@@ -96,9 +96,10 @@ void loop() {
   }
 
   // print X,Y,Z to serial
+  String lbl[4] = {"X","Y","Z","N"};
+    
   float maxp = output->data.f[0];
   int maxi = 0;
-  String lbl[4] = {"X","Y","Z","N"};
   for(int i=1;i<4;i++){
     if(output->data.f[i] > maxp){
       maxp = output->data.f[i];

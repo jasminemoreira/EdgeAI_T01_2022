@@ -1,0 +1,6 @@
+source "C:/Users/jasmi/INDT/Cursos/esp-idf/components/app_update/Kconfig.projbuild"
+source "C:/Users/jasmi/INDT/Cursos/esp-idf/components/bootloader/Kconfig.projbuild"
+source "C:/Users/jasmi/INDT/Cursos/esp-idf/components/esp_rom/Kconfig.projbuild"
+source "C:/Users/jasmi/INDT/Cursos/esp-idf/components/esptool_py/Kconfig.projbuild"
+source "C:/Users/jasmi/INDT/Cursos/esp-idf/components/partition_table/Kconfig.projbuild"
+source "C:/Users/jasmi/INDT/Cursos/EdgeAI_T01_2022/Espressif/MPU6050/main/Kconfig.projbuild"

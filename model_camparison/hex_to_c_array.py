@@ -22,7 +22,7 @@ def hex_to_c_array(hex_data, var_name, x_factor, y_factor):
   #c_str += '\nunsigned int ' + var_name + '_len = ' + str(len(hex_data)) + ';\n'
 
   # Declare C variable and make it aligned in memory
-  c_str += 'unsigned char ' + var_name + '[] __attribute__((aligned(4)))= {'
+  c_str += 'unsigned char ' + var_name + '[] = {'
   hex_array = []
   for i, val in enumerate(hex_data) :
 
